@@ -32,6 +32,18 @@
                     });
                 });
             }
+
+            $(window).resize(function() {
+                $(".parentForm"+form.attr("id")).map(function() {
+                    var pos = methods._calculatePosition($(this).data( 'callerField' ), $(this), form.data('jqv'))
+                    $(this).css({
+                        "top": pos.callerTopPosition,
+                        "left": pos.callerleftPosition,
+                        "marginTop": pos.marginTopSize
+                    });
+
+                }) 
+            })
         },
         /**
          * Attachs jQuery.validationEngine to form.submit and field.blur events
@@ -48,33 +60,33 @@
             else
                 options = form.data('jqv');
 
-			var validateAttribute = (form.find("[data-validation-engine*=validate]")) ? "data-validation-engine" : "class";
+            var validateAttribute = (form.find("[data-validation-engine*=validate]")) ? "data-validation-engine" : "class";
 			
             if (!options.binded) {
-					if (options.bindMethod == "bind"){
+                if (options.bindMethod == "bind"){
 						
-						// bind fields
-                        form.find("[class*=validate]").not("[type=checkbox]").not("[type=radio]").not(".datepicker").bind(options.validationEventTrigger, methods._onFieldEvent);
-                        form.find("[class*=validate][type=checkbox],[class*=validate][type=radio]").bind("click", methods._onFieldEvent);
+                    // bind fields
+                    form.find("[class*=validate]").not("[type=checkbox]").not("[type=radio]").not(".datepicker").bind(options.validationEventTrigger, methods._onFieldEvent);
+                    form.find("[class*=validate][type=checkbox],[class*=validate][type=radio]").bind("click", methods._onFieldEvent);
 						
-						form.find("[class*=validate][class*=datepicker]").bind(options.validationEventTrigger,{"delay": 300}, methods._onFieldEvent);
+                    form.find("[class*=validate][class*=datepicker]").bind(options.validationEventTrigger,{"delay": 300}, methods._onFieldEvent);
 
-                        // bind form.submit
-                        form.bind("submit", methods._onSubmitEvent);
-					} else if (options.bindMethod == "live") {
-                        // bind fields with LIVE (for persistant state)
-                        form.find("[class*=validate]").not("[type=checkbox]").not(".datepicker").live(options.validationEventTrigger, methods._onFieldEvent);
-                        form.find("[class*=validate][type=checkbox]").live("click", methods._onFieldEvent);
+                    // bind form.submit
+                    form.bind("submit", methods._onSubmitEvent);
+                } else if (options.bindMethod == "live") {
+                    // bind fields with LIVE (for persistant state)
+                    form.find("[class*=validate]").not("[type=checkbox]").not(".datepicker").live(options.validationEventTrigger, methods._onFieldEvent);
+                    form.find("[class*=validate][type=checkbox]").live("click", methods._onFieldEvent);
 
-						form.find("[class*=validate][class*=datepicker]").live(options.validationEventTrigger,{"delay": 300}, methods._onFieldEvent);
+                    form.find("[class*=validate][class*=datepicker]").live(options.validationEventTrigger,{"delay": 300}, methods._onFieldEvent);
 
-                        // bind form.submit
-                        form.live("submit", methods._onSubmitEvent);
-					}
+                    // bind form.submit
+                    form.live("submit", methods._onSubmitEvent);
+                }
 
                 options.binded = true;
             }
-			return this;
+            return this;
         },
         /**
          * Unregisters any bindings that may point to jQuery.validaitonEngine
@@ -133,21 +145,21 @@
         validateform: function() {
             return methods._onSubmitEvent.call(this);
         },
-		/**
+        /**
          *  Redraw prompts position, useful when you change the DOM state when validating
          */
         updatePromptsPosition: function() {
-			var form = this.closest('form');
+            var form = this.closest('form');
             var options = form.data('jqv');
             // No option, take default one
-			form.find('[class*=validate]').not(':hidden').not(":disabled").each(function(){
-				var field = $(this);
+            form.find('[class*=validate]').not(':hidden').not(":disabled").each(function(){
+                var field = $(this);
 
-				var prompt = methods._getPrompt(field);
-				var promptText = $(prompt).find(".formErrorContent").html();
+                var prompt = methods._getPrompt(field);
+                var promptText = $(prompt).find(".formErrorContent").html();
 
-				if(prompt) methods._updatePrompt(field, $(prompt), promptText, undefined, false, options);
-			})
+                if(prompt) methods._updatePrompt(field, $(prompt), promptText, undefined, false, options);
+            })
         },
         /**
          * Displays a prompt on a element.
@@ -162,7 +174,7 @@
             var form = this.closest('form');
             var options = form.data('jqv');
             // No option, take default one
-			if(!options) options = methods._saveOptions(this, options);
+            if(!options) options = methods._saveOptions(this, options);
             if(promptPosition)
                 options.promptPosition=promptPosition;
             options.showArrow = showArrow==true;
@@ -173,7 +185,7 @@
          * Closes all error prompts on the page
          */
         hidePrompt: function() {
-        	var promptClass =  "."+ methods._getClassName($(this).attr("id")) + "formError";
+            var promptClass =  "."+ methods._getClassName($(this).attr("id")) + "formError";
             $(promptClass).fadeTo("fast", 0.3, function() {
                 $(this).remove();
             });
@@ -182,12 +194,12 @@
          * Closes form error prompts, CAN be invidual
          */
         hide: function() {
-			var closingtag;
-        	if($(this).is("form")){
-        		closingtag = "parentForm"+$(this).attr('id');
-        	}else{
-        		closingtag = $(this).attr('id') +"formError";
-        	}
+            var closingtag;
+            if($(this).is("form")){
+                closingtag = "parentForm"+$(this).attr('id');
+            }else{
+                closingtag = $(this).attr('id') +"formError";
+            }
             $('.'+closingtag).fadeTo("fast", 0.3, function() {
                 $(this).remove();
             });
@@ -209,9 +221,9 @@
             var form = field.closest('form');
             var options = form.data('jqv');
             // validate the current field
-			window.setTimeout(function() {
-			    methods._validateField(field, options);
-			}, (event.data) ? event.data.delay : 0);
+            window.setTimeout(function() {
+                methods._validateField(field, options);
+            }, (event.data) ? event.data.delay : 0);
             
         },
         /**
@@ -223,9 +235,9 @@
          */
         _onSubmitEvent: function() {
             var form = $(this);
- 			var options = form.data('jqv');
+            var options = form.data('jqv');
    
-			// validate each field (- skip field ajax validation, no necessary since we will perform an ajax form validation)
+            // validate each field (- skip field ajax validation, no necessary since we will perform an ajax form validation)
             var r=methods._validateFields(form, true);
 		
             if (r && options.ajaxFormValidation) {
@@ -272,8 +284,8 @@
             // this variable is set to true if an error is found
             var errorFound = false;
 			
-			// Trigger hook, start validation
-			form.trigger("jqv.form.validating");
+            // Trigger hook, start validation
+            form.trigger("jqv.form.validating");
             // first, evaluate status of non ajax fields
             form.find('[class*=validate]').not(':hidden').not(":disabled").each( function() {
                 var field = $(this);
@@ -283,7 +295,7 @@
             // errorFound |= !methods._checkAjaxStatus(options);
 			
             // thrird, check status and scroll the container accordingly
-			form.trigger("jqv.form.result", [errorFound]);
+            form.trigger("jqv.form.result", [errorFound]);
 			
             if (errorFound) {
 				
@@ -342,7 +354,7 @@
         _validateFormWithAjax: function(form, options) {
 
             var data = form.serialize();
-			var url = (options.ajaxFormValidationURL) ? options.ajaxFormValidationURL : form.attr("action");
+            var url = (options.ajaxFormValidationURL) ? options.ajaxFormValidationURL : form.attr("action");
             $.ajax({
                 type: "GET",
                 url: url,
@@ -377,7 +389,7 @@
 								
                                 // promptText or selector
                                 var msg = value[2];
-								// if the field is valid
+                                // if the field is valid
                                 if (value[1] == true) {
 
                                     if (msg == ""  || !msg){
@@ -426,7 +438,7 @@
         _validateField: function(field, options, skipAjaxValidation) {
             if (!field.attr("id"))
                 $.error("jQueryValidate: an ID attribute is required for this field: " + field.attr("name") + " class:" +
-                field.attr("class"));
+                    field.attr("class"));
 
             var rulesParsing = field.attr('class');
             var getRules = /validate\[(.*)\]/.exec(rulesParsing);
@@ -439,7 +451,7 @@
             var isAjaxValidator = false;
             var fieldName = field.attr("name");
             var promptText = "";
-			var required = false;
+            var required = false;
             options.isError = false;
             options.showArrow = true;
 
@@ -455,26 +467,26 @@
                     case "custom":
                         errorMsg = methods._customRegex(field, rules, i, options);
                         break;
-					case "groupRequired":
-						// Check is its the first of group, if not, reload validation with first field
-						// AND continue normal validation on present field
-						var classGroup = "[class*=" +rules[i + 1] +"]";	
-						var firstOfGroup = field.closest("form").find(classGroup).eq(0);
-						if(firstOfGroup[0] != field[0]){
-							methods._validateField(firstOfGroup, options, skipAjaxValidation)
-							options.showArrow = true;
-							continue;
-						};
+                    case "groupRequired":
+                        // Check is its the first of group, if not, reload validation with first field
+                        // AND continue normal validation on present field
+                        var classGroup = "[class*=" +rules[i + 1] +"]";	
+                        var firstOfGroup = field.closest("form").find(classGroup).eq(0);
+                        if(firstOfGroup[0] != field[0]){
+                            methods._validateField(firstOfGroup, options, skipAjaxValidation)
+                            options.showArrow = true;
+                            continue;
+                        };
                         errorMsg = methods._groupRequired(field, rules, i, options);
-						if(errorMsg) required = true;
-						options.showArrow = false;
+                        if(errorMsg) required = true;
+                        options.showArrow = false;
                         break;
                     case "ajax":
                         // ajax has its own prompts handling technique
-						if(!skipAjaxValidation){
-							methods._ajax(field, rules, i, options);
-	                        isAjaxValidator = true;
-						}
+                        if(!skipAjaxValidation){
+                            methods._ajax(field, rules, i, options);
+                            isAjaxValidator = true;
+                        }
                         break;
                     case "minSize":
                         errorMsg = methods._minSize(field, rules, i, options);
@@ -547,7 +559,7 @@
                         break;
 
                     default:
-                    //$.error("jQueryValidator rule not found"+rules[i]);
+                //$.error("jQueryValidator rule not found"+rules[i]);
                 }
                 if (errorMsg !== undefined) {
                     promptText += errorMsg + "<br/>";
@@ -558,7 +570,7 @@
             }
             // If the rules required is not added, an empty field is not validated
             if(!required){
-            	if(field.val() == "") options.isError = false;
+                if(field.val() == "") options.isError = false;
             }			
 			
             // Hack for radio/checkbox group button, the validation go into the
@@ -578,9 +590,9 @@
 				
                 methods._showPrompt(field, promptText, "", false, options);
             }else{
-				if (!isAjaxValidator) methods._closePrompt(field);
-			}
-			field.trigger("jqv.field.result", [field, options.isError, promptText]);
+                if (!isAjaxValidator) methods._closePrompt(field);
+            }
+            field.trigger("jqv.field.result", [field, options.isError, promptText]);
             return options.isError;
         },
         /**
@@ -626,7 +638,7 @@
                     break;
             }
         },
-		/**
+        /**
          * Validate that 1 from the group field is required
          *
          * @param {jqObject} field
@@ -638,16 +650,16 @@
          */
         _groupRequired: function(field, rules, i, options) {
             var classGroup = "[class*=" +rules[i + 1] +"]";
-			var isValid = false;
-			// Check all fields from the group
-			field.closest("form").find(classGroup).each(function(){
-				if(!methods._required($(this), rules, i, options)){
-					isValid = true;
-					return false;
-				}
-			})
+            var isValid = false;
+            // Check all fields from the group
+            field.closest("form").find(classGroup).each(function(){
+                if(!methods._required($(this), rules, i, options)){
+                    isValid = true;
+                    return false;
+                }
+            })
 			
-			if(!isValid) return options.allrules[rules[i]].alertText;
+            if(!isValid) return options.allrules[rules[i]].alertText;
         },
         /**
          * Validate Regex rules
@@ -661,17 +673,17 @@
          */
         _customRegex: function(field, rules, i, options) {
             var customRule = rules[i + 1];
-			var rule = options.allrules[customRule];
-			if(!rule) {
-				alert("jqv:custom rule not found "+customRule);
-				return;
-			}
+            var rule = options.allrules[customRule];
+            if(!rule) {
+                alert("jqv:custom rule not found "+customRule);
+                return;
+            }
 			
-			var ex=rule.regex;
-			if(!ex) {
-				alert("jqv:custom regex not found "+customRule);
-				return;
-			}
+            var ex=rule.regex;
+            if(!ex) {
+                alert("jqv:custom regex not found "+customRule);
+                return;
+            }
             var pattern = new RegExp(ex);
 
             if (!pattern.test(field.val()))
@@ -858,7 +870,7 @@
                 return true;
             }
             return false;
-        },
+        },          
         //Checks if the start date is before the end date
         //returns true if end is later than start
         _dateCompare: function (start, end) {
@@ -974,19 +986,19 @@
                 extraData = "";
 
             if (extraDataDynamic) {
-              var tmpData = [];
-              var domIds = String(extraDataDynamic).split(",");
-              for (var i = 0; i < domIds.length; i++) {
-                var id = domIds[i];
-                if ($(id).length) {
-                  var inputValue = field.closest("form").find(id).val();
-                  var keyValue = id.replace('#', '') + '=' + escape(inputValue);
-                  tmpData.push(keyValue);
+                var tmpData = [];
+                var domIds = String(extraDataDynamic).split(",");
+                for (var i = 0; i < domIds.length; i++) {
+                    var id = domIds[i];
+                    if ($(id).length) {
+                        var inputValue = field.closest("form").find(id).val();
+                        var keyValue = id.replace('#', '') + '=' + escape(inputValue);
+                        tmpData.push(keyValue);
+                    }
                 }
-              }
-              extraDataDynamic = tmpData.join("&");
+                extraDataDynamic = tmpData.join("&");
             } else {
-              extraDataDynamic = "";              
+                extraDataDynamic = "";              
             }
                                 
             if (!options.isError) {
@@ -1017,41 +1029,41 @@
                         // make sure we found the element
                         if (errorField.length == 1) {
                             var status = json[1];
-							// read the optional msg from the server
-							var msg = json[2];
+                            // read the optional msg from the server
+                            var msg = json[2];
                             if (!status) {
                                 // Houston we got a problem - display an red prompt
                                 options.ajaxValidCache[errorFieldId] = false;
                                 options.isError = true;
 
-								// resolve the msg prompt
-								if(msg) {
-									if (options.allrules[msg]) {
-                                    	var txt = options.allrules[msg].alertText;
-                                    	if (txt)
-                                    		msg = txt;
+                                // resolve the msg prompt
+                                if(msg) {
+                                    if (options.allrules[msg]) {
+                                        var txt = options.allrules[msg].alertText;
+                                        if (txt)
+                                            msg = txt;
                                     }
-								}
-								else
+                                }
+                                else
                                     msg = rule.alertText;
                                 
-								methods._showPrompt(errorField, msg, "", true, options);
+                                methods._showPrompt(errorField, msg, "", true, options);
                             } else {
                                 if (options.ajaxValidCache[errorFieldId] !== undefined)
                                     options.ajaxValidCache[errorFieldId] = true;
 
                                 // resolves the msg prompt
-								if(msg) {
-									if (options.allrules[msg]) {
-							           	var txt = options.allrules[msg].alertTextOk;
-							           	if (txt)
-							           		msg = txt;
-							        }
-								}
-								else
-							       	msg = rule.alertTextOk;                                
+                                if(msg) {
+                                    if (options.allrules[msg]) {
+                                        var txt = options.allrules[msg].alertTextOk;
+                                        if (txt)
+                                            msg = txt;
+                                    }
+                                }
+                                else
+                                    msg = rule.alertTextOk;                                
 
-								// see if we should display a green prompt
+                                // see if we should display a green prompt
                                 if (msg)
                                     methods._showPrompt(errorField, msg, "pass", true, options);
                                 else
@@ -1105,10 +1117,10 @@
          */
         _showPrompt: function(field, promptText, type, ajaxed, options, ajaxform) {
             var prompt = methods._getPrompt(field);
-			// The ajax submit errors are not see has an error in the form,
-			// When the form errors are returned, the engine see 2 bubbles, but those are ebing closed by the engine at the same time
-			// Because no error was found befor submitting
-			if(ajaxform) prompt = false;
+            // The ajax submit errors are not see has an error in the form,
+            // When the form errors are returned, the engine see 2 bubbles, but those are ebing closed by the engine at the same time
+            // Because no error was found befor submitting
+            if(ajaxform) prompt = false;
             if (prompt)
                 methods._updatePrompt(field, prompt, promptText, type, ajaxed, options);
             else
@@ -1166,9 +1178,9 @@
             //Cedric: Needed if a container is in position:relative
             // insert prompt in the form or in the overflown container?
             if (options.isOverflown)
-            	field.before(prompt);
+                field.before(prompt);
             else
-               $("body").append(prompt);
+                $("body").append(prompt);
 
             var pos = methods._calculatePosition(field, prompt, options);
             prompt.css({
@@ -1176,7 +1188,7 @@
                 "left": pos.callerleftPosition,
                 "marginTop": pos.marginTopSize,
                 "opacity": 0
-            });
+            }).data('callerField', field);
 
             return prompt.animate({
                 "opacity": 0.87
@@ -1243,21 +1255,21 @@
          *            field
          * @return undefined or the error prompt (jqObject)
          */
-  		  _getPrompt: function(field) {
-		    var className = field.attr("id").replace(":","_") + "formError";
-		    var match = $("." + methods._escapeExpression(className))[0];
-		    if (match)
-		      return $(match);
-		  },
-         /**
+        _getPrompt: function(field) {
+            var className = field.attr("id").replace(":","_") + "formError";
+            var match = $("." + methods._escapeExpression(className))[0];
+            if (match)
+                return $(match);
+        },
+        /**
          * Returns the escapade classname
          *
          * @param {selector}
          *            className
          */		
-		  _escapeExpression: function (selector) {
-		    return selector.replace(/([#;&,\.\+\*\~':"\!\^$\[\]\(\)=>\|])/g, "\\$1");
-		  },
+        _escapeExpression: function (selector) {
+            return selector.replace(/([#;&,\.\+\*\~':"\!\^$\[\]\(\)=>\|])/g, "\\$1");
+        },
         /**
         * Calculates prompt position
         *
@@ -1336,9 +1348,9 @@
                 var allRules = $.validationEngineLanguage.allRules;
             else
                 $.error("jQuery.validationEngine rules are not loaded, plz add localization files to the page");
-			// --- Internals DO NOT TOUCH or OVERLOAD ---
-			// validation rules and i18
-			$.validationEngine.defaults.allrules = allRules;
+            // --- Internals DO NOT TOUCH or OVERLOAD ---
+            // validation rules and i18
+            $.validationEngine.defaults.allrules = allRules;
 			
             var userOptions = $.extend({},$.validationEngine.defaults, options);
 
@@ -1351,7 +1363,7 @@
          * @param {String} className
          */
         _getClassName: function(className) {
-        	return className.replace(":","_").replace(".","_");
+            return className.replace(":","_").replace(".","_");
         }
     };
 
@@ -1367,62 +1379,62 @@
     $.fn.validationEngine = function(method) {
 
         var form = $(this);
-		  if(!form[0]) return false;  // stop here if the form does not exist
+        if(!form[0]) return false;  // stop here if the form does not exist
 		  
         if (typeof(method) == 'string' && method.charAt(0) != '_' && methods[method]) {
 
             // make sure init is called once
             if(method != "showPrompt" && method != "hidePrompt" && method != "hide" && method != "hideAll") 
-            	methods.init.apply(form);
+                methods.init.apply(form);
 
             return methods[method].apply(form, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method == 'object' || !method) {
             // default constructor with or without arguments
 			
-			methods.init.apply(form, arguments);
+            methods.init.apply(form, arguments);
             return methods.attach.apply(form);
         } else {
             $.error('Method ' + method + ' does not exist in jQuery.validationEngine');
         }
     };
-	// LEAK GLOBAL OPTIONS
-	$.validationEngine= {defaults:{
+    // LEAK GLOBAL OPTIONS
+    $.validationEngine= {defaults:{
 
-        // Name of the event triggering field validation
-        validationEventTrigger: "blur",
-        // Automatically scroll viewport to the first error
-        scroll: true,
-        // Opening box position, possible locations are: topLeft,
-        // topRight, bottomLeft, centerRight, bottomRight
-        promptPosition: "topRight",
-        bindMethod:"bind",
-		// internal, automatically set to true when it parse a _ajax rule
-		inlineAjax: false,
-        // if set to true, the form data is sent asynchronously via ajax to the form.action url (get)
-        ajaxFormValidation: false,
-        // Ajax form validation callback method: boolean onComplete(form, status, errors, options)
-        // retuns false if the form.submit event needs to be canceled.
-		ajaxFormValidationURL: false,
-        // The url to send the submit ajax validation (default to action)
-        onAjaxFormComplete: $.noop,
-        // called right before the ajax call, may return false to cancel
-        onBeforeAjaxFormValidation: $.noop,
-        // Stops form from submitting and execute function assiciated with it
-        onValidationComplete: false,
+            // Name of the event triggering field validation
+            validationEventTrigger: "blur",
+            // Automatically scroll viewport to the first error
+            scroll: true,
+            // Opening box position, possible locations are: topLeft,
+            // topRight, bottomLeft, centerRight, bottomRight
+            promptPosition: "topRight",
+            bindMethod:"bind",
+            // internal, automatically set to true when it parse a _ajax rule
+            inlineAjax: false,
+            // if set to true, the form data is sent asynchronously via ajax to the form.action url (get)
+            ajaxFormValidation: false,
+            // Ajax form validation callback method: boolean onComplete(form, status, errors, options)
+            // retuns false if the form.submit event needs to be canceled.
+            ajaxFormValidationURL: false,
+            // The url to send the submit ajax validation (default to action)
+            onAjaxFormComplete: $.noop,
+            // called right before the ajax call, may return false to cancel
+            onBeforeAjaxFormValidation: $.noop,
+            // Stops form from submitting and execute function assiciated with it
+            onValidationComplete: false,
 
-        // Used when the form is displayed within a scrolling DIV
-        isOverflown: false,
-        overflownDIV: "",
+            // Used when the form is displayed within a scrolling DIV
+            isOverflown: false,
+            overflownDIV: "",
 
-        // true when form and fields are binded
-        binded: false,
-        // set to true, when the prompt arrow needs to be displayed
-        showArrow: true,
-        // did one of the validation fail ? kept global to stop further ajax validations
-        isError: false,
-        // Caches field validation status, typically only bad status are created.
-        // the array is used during ajax form validation to detect issues early and prevent an expensive submit
-        ajaxValidCache: {}
+            // true when form and fields are binded
+            binded: false,
+            // set to true, when the prompt arrow needs to be displayed
+            showArrow: true,
+            // did one of the validation fail ? kept global to stop further ajax validations
+            isError: false,
+            // Caches field validation status, typically only bad status are created.
+            // the array is used during ajax form validation to detect issues early and prevent an expensive submit
+            ajaxValidCache: {}
 
     }}
 	
