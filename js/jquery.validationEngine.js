@@ -462,7 +462,7 @@
             if (!getRules)
                 return false;
             var str = getRules[1];
-            var rules = str.split(/\[|,|\]/);
+            var rules = str.split(/\[|,\s*|\]/);
 
             // true if we ran the ajax validation, tells the logic to stop messing with prompts
             var isAjaxValidator = false;
